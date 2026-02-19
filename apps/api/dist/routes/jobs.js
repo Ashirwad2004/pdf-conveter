@@ -5,4 +5,5 @@ const jobs_1 = require("../controllers/jobs");
 const validate_1 = require("../middleware/validate");
 const router = (0, express_1.Router)();
 router.post('/', (0, validate_1.validate)(jobs_1.createJobSchema), jobs_1.createJob);
+router.get('/:id', jobs_1.getJobStatus);
 exports.default = router;

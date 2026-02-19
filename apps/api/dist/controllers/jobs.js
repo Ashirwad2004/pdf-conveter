@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createJob = exports.createJobSchema = void 0;
+exports.getJobStatus = exports.createJob = exports.createJobSchema = void 0;
 const queue_1 = require("../queue");
 const zod_1 = require("zod");
 exports.createJobSchema = zod_1.z.object({
@@ -66,3 +66,25 @@ const createJob = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.createJob = createJob;
+const getJobStatus = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { id } = req.params;
+        const job = yield queue_1.conversionQueue.getJob(id);
+        if (!job) {
+            return res.status(404).json({ status: 'error', message: 'Job not found' });
+        }
+        const state = yield job.getState();
+        const result = job.returnvalue;
+        res.json({
+            status: 'success',
+            jobId: job.id,
+            state,
+            result
+        });
+    }
+    catch (error) {
+        console.error('Error fetching job status:', error);
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+});
+exports.getJobStatus = getJobStatus;

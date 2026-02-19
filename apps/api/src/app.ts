@@ -13,6 +13,10 @@ app.use(morgan('dev'));
 app.use(express.json());
 
 // Routes
+app.get('/', (req, res) => {
+    res.json({ message: 'Welcome to PDF Converter API' });
+});
+
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', service: 'api' });
 });

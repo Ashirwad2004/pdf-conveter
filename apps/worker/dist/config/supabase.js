@@ -12,4 +12,7 @@ const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 if (!supabaseUrl || !supabaseKey) {
     console.warn('Supabase URL or Key not set!');
 }
+else {
+    console.log(`Supabase Config: URL=${supabaseUrl}, KeyLength=${supabaseKey.length}`);
+}
 exports.supabase = (0, supabase_js_1.createClient)(supabaseUrl, supabaseKey);

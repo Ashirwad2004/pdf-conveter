@@ -57,3 +57,27 @@ export const createJob = async (req: Request, res: Response) => {
         res.status(500).json({ status: 'error', message: 'Internal Server Error' });
     }
 };
+
+export const getJobStatus = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const job = await conversionQueue.getJob(id as string);
+
+        if (!job) {
+            return res.status(404).json({ status: 'error', message: 'Job not found' });
+        }
+
+        const state = await job.getState();
+        const result = job.returnvalue;
+
+        res.json({
+            status: 'success',
+            jobId: job.id,
+            state,
+            result
+        });
+    } catch (error) {
+        console.error('Error fetching job status:', error);
+        res.status(500).json({ status: 'error', message: 'Internal Server Error' });
+    }
+};
