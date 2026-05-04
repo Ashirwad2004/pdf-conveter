@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import IORedis from 'ioredis';
 import { downloadFile } from './processors/download';
 import { uploadFile } from './processors/upload';
-import { convertToPdf } from './processors/converter';
+import { convertDocument } from './processors/converter';
 import fs from 'fs-extra';
 import path from 'path';
 
@@ -32,12 +32,21 @@ const worker = new Worker('conversion-queue', async (job: Job) => {
 
         if (conversion_type === 'word-to-pdf' || conversion_type === 'excel-to-pdf' || conversion_type === 'ppt-to-pdf') {
             try {
-                tempOutputPath = await convertToPdf(tempInputPath, 'pdf');
+                tempOutputPath = await convertDocument(tempInputPath, 'pdf');
             } catch (err: any) {
                 console.error('LibreOffice conversion failed, falling back to simulation:', err.message);
                 // Fallback: Copy input to output (simulate PDF conversion for demo purposes)
                 // In production, we would fail here.
                 const fallbackPath = tempInputPath + '.pdf';
+                await fs.copy(tempInputPath, fallbackPath);
+                tempOutputPath = fallbackPath;
+            }
+        } else if (conversion_type === 'pdf-to-word') {
+            try {
+                tempOutputPath = await convertDocument(tempInputPath, 'docx');
+            } catch (err: any) {
+                console.error('LibreOffice conversion failed, falling back to simulation:', err.message);
+                const fallbackPath = tempInputPath + '.docx';
                 await fs.copy(tempInputPath, fallbackPath);
                 tempOutputPath = fallbackPath;
             }

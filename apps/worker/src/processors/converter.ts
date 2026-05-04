@@ -5,7 +5,7 @@ import util from 'util';
 
 const convertAsync = util.promisify(libreoffice.convert);
 
-export const convertToPdf = async (inputPath: string, outputFormat: string = 'pdf'): Promise<string> => {
+export const convertDocument = async (inputPath: string, outputFormat: string): Promise<string> => {
     const ext = path.extname(inputPath);
     const outputPath = inputPath.replace(ext, `.${outputFormat}`);
 
